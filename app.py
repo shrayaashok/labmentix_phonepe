@@ -9,59 +9,55 @@ conn = mysql.connector.connect(
     database="phone_pe"
 )
 
-st.title("PhonePe Transaction Insights")
+st.title("phonepe transaction insights")
 
 option = st.selectbox(
-    "Select Analysis",
-    ("Top States", "Payment Types", "Yearly Trend",
-     "Top Districts", "Top Brands")
+    "select analysis",
+    ("top states", "payment types", "yearly trend",
+     "top districts", "top brands")
 )
 
-
-if option == "Top States":
+if option == "top states":
     df = pd.read_sql("""
-    SELECT state, SUM(transaction_amount) AS total
-    FROM aggregated_transaction
-    GROUP BY state
-    ORDER BY total DESC LIMIT 10
+    select state, sum(transaction_amount) as total
+    from aggregated_transaction
+    group by state
+    order by total desc limit 10
     """, conn)
     st.bar_chart(df.set_index("state"))
 
-
-elif option == "Payment Types":
+elif option == "payment types":
     df = pd.read_sql("""
-    SELECT transaction_type, SUM(transaction_amount) AS total
-    FROM aggregated_transaction
-    GROUP BY transaction_type
+    select transaction_type, sum(transaction_amount) as total
+    from aggregated_transaction
+    group by transaction_type
     """, conn)
     st.bar_chart(df.set_index("transaction_type"))
 
-
-elif option == "Yearly Trend":
+elif option == "yearly trend":
     df = pd.read_sql("""
-    SELECT year, SUM(transaction_amount) AS total
-    FROM aggregated_transaction
-    GROUP BY year
-    ORDER BY year
+    select year, sum(transaction_amount) as total
+    from aggregated_transaction
+    group by year
+    order by year
     """, conn)
     st.line_chart(df.set_index("year"))
 
-
-elif option == "Top Districts":
+elif option == "top districts":
     df = pd.read_sql("""
-    SELECT district, SUM(transaction_amount) AS total
-    FROM map_transaction
-    GROUP BY district
-    ORDER BY total DESC LIMIT 10
+    select district, sum(transaction_amount) as total
+    from map_transaction
+    group by district
+    order by total desc limit 10
     """, conn)
     st.bar_chart(df.set_index("district"))
 
 
-elif option == "Top Brands":
+elif option == "top brands":
     df = pd.read_sql("""
-    SELECT brand, SUM(user_count) AS total
-    FROM aggregated_user
-    GROUP BY brand
-    ORDER BY total DESC LIMIT 10
+    select brand, sum(user_count) as total
+    from aggregated_user
+    group by brand
+    order by total desc limit 10
     """, conn)
     st.bar_chart(df.set_index("brand"))

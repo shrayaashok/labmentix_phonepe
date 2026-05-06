@@ -10,21 +10,16 @@ conn = mysql.connector.connect(
 )
 
 query = """
-SELECT state, SUM(transaction_amount) AS total
-FROM aggregated_transaction
-GROUP BY state
-ORDER BY total DESC
-LIMIT 10;
+select state, sum(transaction_amount) as total
+from aggregated_transaction
+group by state
+order by total desc
+limit 10;
 """
-
-
 df = pd.read_sql(query, conn)
-
 
 print(df)
 
-
-df.plot(kind='bar', x='state', y='total', title="Top 10 States by Transaction Amount")
-
+df.plot(kind='bar', x='state', y='total', title="top 10 states by transaction amount")
 
 plt.show()

@@ -2,7 +2,6 @@ import os
 import json
 import mysql.connector
 
-
 conn = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -10,8 +9,6 @@ conn = mysql.connector.connect(
     database="phone_pe"
 )
 cursor = conn.cursor()
-
-
 
 transaction_path = "data/data/aggregated/transaction/country/india/state/"
 
@@ -27,18 +24,18 @@ for state in os.listdir(transaction_path):
             with open(file_path, 'r') as f:
                 data = json.load(f)
 
-                if "data" in data and data["data"] and "transactionData" in data["data"]:
+                if "data" in data and data["data"] and "transactiondata" in data["data"]:
                     
-                    for i in data["data"]["transactionData"]:
+                    for i in data["data"]["transactiondata"]:
                         name = i["name"]
 
-                        for j in i["paymentInstruments"]:
+                        for j in i["paymentinstruments"]:
                             count = j["count"]
                             amount = j["amount"]
 
                             cursor.execute("""
-                            INSERT INTO aggregated_transaction
-                            VALUES (%s,%s,%s,%s,%s,%s)
+                            insert into aggregated_transaction
+                            values (%s,%s,%s,%s,%s,%s)
                             """, (
                                 state,
                                 int(year),
@@ -48,9 +45,8 @@ for state in os.listdir(transaction_path):
                                 amount
                             ))
 
-print("✅ Transaction Data Loaded")
+print(" transaction data loaded")
 
-# ---------------- USER DATA LOADING (FIXED) ----------------
 
 user_path = "data/data/aggregated/user/country/india/state/"
 
@@ -66,22 +62,22 @@ for state in os.listdir(user_path):
             with open(file_path, 'r') as f:
                 data = json.load(f)
 
-                # ✅ SAFE CHECK (IMPORTANT)
+                
                 if (
                     "data" in data and 
                     data["data"] is not None and 
-                    "usersByDevice" in data["data"] and 
-                    data["data"]["usersByDevice"] is not None
+                    "usersbydevice" in data["data"] and 
+                    data["data"]["usersbydevice"] is not None
                 ):
                     
-                    for i in data["data"]["usersByDevice"]:
+                    for i in data["data"]["usersbydevice"]:
                         brand = i["brand"]
                         count = i["count"]
                         percentage = i["percentage"]
 
                         cursor.execute("""
-                        INSERT INTO aggregated_user
-                        VALUES (%s,%s,%s,%s,%s,%s)
+                        insert into aggregated_user
+                        values (%s,%s,%s,%s,%s,%s)
                         """, (
                             state,
                             int(year),
@@ -91,11 +87,8 @@ for state in os.listdir(user_path):
                             percentage
                         ))
 
-print("✅ User Data Loaded")
+print(" user data loaded")
 
-# =========================================================
-# 🔹 3. LOAD MAP TRANSACTION DATA (DISTRICT LEVEL)
-# =========================================================
 
 map_path = "data/data/map/transaction/hover/country/india/state/"
 
@@ -111,22 +104,22 @@ for state in os.listdir(map_path):
             with open(file_path, 'r') as f:
                 data = json.load(f)
 
-                # ✅ SAFE CHECK
+                
                 if (
                     "data" in data and 
                     data["data"] is not None and 
-                    "hoverDataList" in data["data"] and 
-                    data["data"]["hoverDataList"] is not None
+                    "hoverdatalist" in data["data"] and 
+                    data["data"]["hoverdatalist"] is not None
                 ):
                     
-                    for i in data["data"]["hoverDataList"]:
+                    for i in data["data"]["hoverdatalist"]:
                         district = i["name"]
                         count = i["metric"][0]["count"]
                         amount = i["metric"][0]["amount"]
 
                         cursor.execute("""
-                        INSERT INTO map_transaction
-                        VALUES (%s,%s,%s,%s,%s,%s)
+                        insert into map_transaction
+                        values (%s,%s,%s,%s,%s,%s)
                         """, (
                             state,
                             int(year),
@@ -136,11 +129,8 @@ for state in os.listdir(map_path):
                             amount
                         ))
 
-print("✅ Map Transaction Data Loaded")
+print(" map transaction data loaded")
 
-# =========================================================
-# 🔹 4. LOAD TOP TRANSACTION DATA
-# =========================================================
 
 top_path = "data/data/top/transaction/country/india/state/"
 
@@ -164,13 +154,13 @@ for state in os.listdir(top_path):
                 ):
                     
                     for i in data["data"]["districts"]:
-                        name = i["entityName"]
+                        name = i["entityname"]
                         amount = i["metric"]["amount"]
                         count = i["metric"]["count"]
 
                         cursor.execute("""
-                        INSERT INTO top_transaction
-                        VALUES (%s,%s,%s,%s,%s,%s)
+                        insert into top_transaction
+                        values (%s,%s,%s,%s,%s,%s)
                         """, (
                             state,
                             int(year),
@@ -180,10 +170,10 @@ for state in os.listdir(top_path):
                             amount
                         ))
 
-print("✅ Top Transaction Data Loaded")
+print(" top transaction data loaded")
 
 conn.commit()
 cursor.close()
 conn.close()
 
-print("🎉 ALL DATA LOADED SUCCESSFULLY")
+print(" all data loaded successfully")
